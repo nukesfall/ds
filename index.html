@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Damon Science" />
+  <title>Damon Science</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --fg: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.70);
+      --muted2: rgba(255,255,255,.52);
+      --bg: #05070c;
+      --max: 1180px;
+      --pad: clamp(18px, 3vw, 34px);
+      --ease: cubic-bezier(.2,.8,.2,1);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      color:var(--fg);
+      background: var(--bg);
+      font-family: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      overflow-x:hidden;
+    }
+
+    .stage{
+      position:relative;
+      min-height:100svh;
+      width:100%;
+      display:block;
+      isolation:isolate;
+    }
+
+    .bg{
+      position:absolute; inset:0;
+      z-index:-3;
+      background:
+        radial-gradient(1200px 800px at 70% 40%, rgba(45,120,190,.28), transparent 60%),
+        radial-gradient(900px 700px at 30% 65%, rgba(20,170,130,.22), transparent 55%),
+        linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.78));
+    }
+    .bg-media{
+      position:absolute; inset:0;
+      width:100%; height:100%;
+      object-fit:cover;
+      z-index:-4;
+      filter: saturate(1.05) contrast(1.05) brightness(.92);
+      transform: scale(1.03);
+    }
+
+    .grain{
+      position:absolute; inset:0;
+      z-index:-2;
+      pointer-events:none;
+      opacity:.12;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+      mix-blend-mode: overlay;
+    }
+
+    .vignette{
+      position:absolute; inset:-1px;
+      z-index:-1;
+      pointer-events:none;
+      background: radial-gradient(1200px 900px at 50% 40%, transparent 55%, rgba(0,0,0,.55) 100%);
+    }
+
+    header{
+      position:fixed;
+      top:0; left:0; right:0;
+      z-index:10;
+      padding: var(--pad);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      pointer-events:none;
+    }
+    .nav{
+      width:min(var(--max), calc(100% - (var(--pad)*2)));
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+      pointer-events:auto;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      text-decoration:none;
+      color:var(--fg);
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      font-size:12px;
+      opacity:.95;
+      font-weight:500;
+    }
+
+    nav{
+      display:flex;
+      gap:18px;
+      align-items:center;
+    }
+    nav a{
+      color:var(--muted);
+      text-decoration:none;
+      font-size:12px;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      transition: opacity .25s var(--ease), transform .25s var(--ease);
+      opacity:.9;
+      font-weight:500;
+    }
+    nav a:hover{
+      opacity:1;
+      transform: translateY(-1px);
+      color:var(--fg);
+    }
+
+    main{
+      min-height:100svh;
+      display:grid;
+      place-items:center;
+      padding: calc(var(--pad) + 68px) var(--pad) var(--pad);
+    }
+    .wrap{
+      width:min(var(--max), 100%);
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      align-items:end;
+    }
+
+    .hero-title{
+      margin:0;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-size: clamp(44px, 7vw, 112px);
+      line-height: .92;
+      text-shadow: 0 12px 40px rgba(0,0,0,.35);
+    }
+
+    .about-line{
+      margin-top: 14px;
+      color: var(--muted2);
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      line-height: 1.7;
+      max-width: 86ch;
+      font-weight:500;
+    }
+
+    .hint{
+      position:fixed;
+      left: var(--pad);
+      bottom: var(--pad);
+      z-index:9;
+      color: rgba(255,255,255,.55);
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      opacity:.85;
+      pointer-events:none;
+      mix-blend-mode: screen;
+      font-weight:500;
+    }
+    .hint .line{
+      width:64px;
+      height:1px;
+      background: rgba(255,255,255,.28);
+      transform-origin:left;
+      animation: sweep 2.4s var(--ease) infinite;
+    }
+    @keyframes sweep{
+      0%{ transform: scaleX(.15); opacity:.35; }
+      50%{ transform: scaleX(1); opacity:.9; }
+      100%{ transform: scaleX(.15); opacity:.35; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *{ animation:none !important; transition:none !important; }
+      .bg-media{ transform:none !important; }
+      .hint .line{ animation:none !important; }
+    }
+    @media (max-width: 520px){
+      nav{ gap:14px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="stage">
+    <img
+      class="bg-media"
+      src="https://images.unsplash.com/photo-1458668383970-8ddd3927deed?auto=format&fit=crop&w=2400&q=80"
+      alt=""
+    />
+    <div class="bg"></div>
+    <div class="grain"></div>
+    <div class="vignette"></div>
+
+    <header>
+      <div class="nav">
+        <a class="brand" href="#">Damon Science</a>
+        <nav>
+          <a href="mailto:contact@damonscience.com">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="wrap">
+        <h1 class="hero-title">A NEW WORLD</h1>
+        <div class="about-line">
+          exploring innovations in medical technologies
+        </div>
+      </div>
+    </main>
+
+    <div class="hint">
+      <span class="line"></span>
+      <span>© 2026 IRL Robotics LLC, dba Damon Science</span>
+    </div>
+  </div>
+
+  <script>
+    const media = document.querySelector('.bg-media');
+    let raf = null;
+
+    function onMove(e){
+      if (!media) return;
+      const x = (e.clientX / window.innerWidth  - 0.5);
+      const y = (e.clientY / window.innerHeight - 0.5);
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        media.style.transform = `scale(1.05) translate(${x * 12}px, ${y * 10}px)`;
+      });
+    }
+
+    window.addEventListener('pointermove', onMove, { passive: true });
+  </script>
+</body>
+</html>
